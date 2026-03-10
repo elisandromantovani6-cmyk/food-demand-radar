@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
+import { menuCombos, menuItems } from "./menu";
 
 export interface WhatsAppConfig {
   enabled: boolean;
@@ -166,17 +167,12 @@ REGRAS DO CARDÁPIO
    - Desconto fora dos combos oficiais
 
 ═══════════════════════════════════════
-COMBOS DO DIA (sugerir quando oportuno)
+COMBOS ATIVOS
 ═══════════════════════════════════════
 
-🔥 COMBO FAMÍLIA — R$139,90 (economia de R$20)
-   1 Pizza Grande (Mais Pedidas) + 1 Refrigerante 2L + 1 Cheesebread à escolha
+{combosAtivos}
 
-🔥 COMBO CASAL — R$109,90 (economia de R$15)
-   1 Pizza Média (qualquer) + 1 Sobremesa Brotinho + 2 Refrigerantes Lata
-
-🔥 COMBO AMIGOS — R$249,90 (economia de R$35)
-   2 Pizzas Giga (Mais Pedidas) + 1 Refrigerante 2L + 1 Porção Chicken Roll (8un)
+IMPORTANTE: Ofereça SOMENTE os combos listados acima. Se não houver combos ativos, NÃO invente ou sugira combos — foque nos upsells individuais.
 
 ═══════════════════════════════════════
 ESTRATÉGIA DE UPSELL (OBRIGATÓRIO)
@@ -196,8 +192,8 @@ Você DEVE oferecer pelo menos 2 upsells por pedido, de forma natural e não ins
 4. UPGRADE DE TAMANHO (quando pedir média):
    "Por apenas R$11 a mais você leva a Grande, que serve até 3 pessoas! Vale a pena?"
 
-5. COMBO (quando o pedido ultrapassa R$80 sem combo):
-   "Vi que seu pedido tá ficando bom! Sabia que no Combo Família por R$139,90 você leva pizza grande + refri 2L + cheesebread e ainda economiza R$20?"
+5. COMBO (SOMENTE se houver combos ativos na seção COMBOS ATIVOS acima):
+   Sugira o combo que melhor se encaixa no que o cliente está pedindo. Se não houver combos ativos, PULE este upsell.
 
 6. ACOMPANHAMENTO (pedido só de pizza):
    "Nosso Alho Roll é o acompanhamento perfeito pra pizza! Porção com 4 por R$17,90. Quer experimentar?"
@@ -353,11 +349,29 @@ export const whatsappRouter = router({
   getConfig: publicProcedure.query(() => config),
 
   getSystemPrompt: publicProcedure.query(() => {
+    // Montar texto dos combos ativos
+    const activeCombos = menuCombos.filter(c => c.active);
+    let combosText: string;
+    if (activeCombos.length === 0) {
+      combosText = "Nenhum combo ativo no momento. NÃO sugira combos ao cliente.";
+    } else {
+      combosText = activeCombos.map(combo => {
+        const itemNames = combo.items
+          .map(id => menuItems.find(i => i.id === id)?.name)
+          .filter(Boolean)
+          .join(" + ");
+        const discount = Math.round((1 - combo.comboPrice / combo.originalPrice) * 100);
+        const economy = (combo.originalPrice - combo.comboPrice).toFixed(2);
+        return `🔥 ${combo.name} — R$${combo.comboPrice.toFixed(2)} (economia de R$${economy}, ${discount}% off)\n   ${itemNames}\n   ${combo.description}`;
+      }).join("\n\n");
+    }
+
     return BOT_SYSTEM_PROMPT
       .replace(/{businessName}/g, config.businessName)
       .replace(/{maxWaitMinutes}/g, String(config.maxWaitMinutes))
       .replace(/{operatingHoursStart}/g, config.operatingHours.start)
-      .replace(/{operatingHoursEnd}/g, config.operatingHours.end);
+      .replace(/{operatingHoursEnd}/g, config.operatingHours.end)
+      .replace(/{combosAtivos}/g, combosText);
   }),
 
   updateConfig: publicProcedure

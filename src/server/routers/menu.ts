@@ -94,7 +94,7 @@ export interface MenuCombo {
 }
 
 // In-memory store (será persistido no Supabase depois)
-const menuItems: MenuItem[] = [
+export const menuItems: MenuItem[] = [
   // === MAIS PEDIDAS ===
   {
     id: "item-1",
@@ -771,7 +771,7 @@ const menuItems: MenuItem[] = [
   { id: "item-borda-pasta-alho", name: "Borda de Pasta de Alho", description: "Borda recheada com pasta de alho", category: "borda_recheada", price: 12.00, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
 ];
 
-const menuCombos: MenuCombo[] = [];
+export const menuCombos: MenuCombo[] = [];
 
 const CATEGORIES = [
   { id: "pizzas", label: "Pizzas" },
