@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,10 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import {
   Zap, Store, Clock, Truck, Bell, Shield, Palette, Save,
   MapPin, Phone, Mail, Globe, ChevronRight, CheckCircle2,
-  AlertCircle, ExternalLink, CreditCard, Users, Crown,
+  AlertCircle, ExternalLink, CreditCard, Users, Crown, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { supabase } from "@/lib/supabase/client";
 
 const TABS = [
   { id: "restaurant", label: "Restaurante", icon: Store },
@@ -81,9 +83,50 @@ const PLANS = [
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<TabId>("restaurant");
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") as TabId) ?? "restaurant";
+  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [saved, setSaved] = useState(false);
   const [hours, setHours] = useState(DEFAULT_HOURS);
+  const [upgrading, setUpgrading] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const handleUpgrade = useCallback(async (planId: string) => {
+    setUpgrading(planId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ planId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } finally {
+      setUpgrading(null);
+    }
+  }, []);
+
+  const handleManageBilling = useCallback(async () => {
+    setPortalLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${session?.access_token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } finally {
+      setPortalLoading(false);
+    }
+  }, []);
 
   const [restaurant, setRestaurant] = useState({
     name: "Pizza Express",
@@ -535,13 +578,31 @@ export default function SettingsPage() {
           {/* Plan Tab */}
           {activeTab === "plan" && (
             <div className="space-y-4">
+              {searchParams.get("success") === "true" && (
+                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-sm text-emerald-400 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  Plano atualizado com sucesso! As mudancas podem levar alguns segundos para refletir.
+                </div>
+              )}
               <Card className="border-border/50">
                 <CardContent className="p-5">
-                  <h3 className="font-semibold mb-1 flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-primary" />
-                    Plano Atual
-                  </h3>
-                  <p className="text-xs text-muted-foreground mb-4">Gerencie sua assinatura e limites</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold mb-1 flex items-center gap-2">
+                        <Crown className="w-4 h-4 text-primary" />
+                        Plano Atual
+                      </h3>
+                      <p className="text-xs text-muted-foreground">Gerencie sua assinatura e limites</p>
+                    </div>
+                    <button
+                      onClick={handleManageBilling}
+                      disabled={portalLoading}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent/50 text-xs font-medium hover:bg-accent transition-colors"
+                    >
+                      {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                      Gerenciar Faturamento
+                    </button>
+                  </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     {PLANS.map(plan => (
@@ -574,17 +635,26 @@ export default function SettingsPage() {
                           ))}
                         </ul>
                         <button
+                          onClick={() => {
+                            if (plan.id !== (user?.plan ?? "starter")) handleUpgrade(plan.id);
+                          }}
                           className={cn(
                             "w-full py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98]",
-                            plan.id === "starter"
+                            plan.id === (user?.plan ?? "starter")
                               ? "bg-secondary text-foreground cursor-default"
                               : plan.popular
                                 ? "bg-emerald-600 text-white hover:bg-emerald-700"
                                 : "bg-primary text-primary-foreground hover:opacity-90"
                           )}
-                          disabled={plan.id === "starter"}
+                          disabled={plan.id === (user?.plan ?? "starter") || upgrading === plan.id}
                         >
-                          {plan.id === "starter" ? "Plano atual" : "Upgrade"}
+                          {upgrading === plan.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                          ) : plan.id === (user?.plan ?? "starter") ? (
+                            "Plano atual"
+                          ) : (
+                            "Upgrade"
+                          )}
                         </button>
                       </div>
                     ))}
