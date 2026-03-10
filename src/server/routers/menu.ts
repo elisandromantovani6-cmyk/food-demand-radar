@@ -675,6 +675,7 @@ const menuItems: MenuItem[] = [
   { id: "item-molho-brigadeiro", name: "Brigadeiro", description: "Molho de brigadeiro de chocolate", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
   { id: "item-molho-ovomaltine", name: "Ovomaltine", description: "Creme de Ovomaltine", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
   { id: "item-molho-nutella", name: "Nutella", description: "Creme de avelã Nutella", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-baunilha", name: "Baunilha", description: "Creme de baunilha", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
 ];
 
 const menuCombos: MenuCombo[] = [];
