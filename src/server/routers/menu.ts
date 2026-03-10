@@ -660,6 +660,21 @@ const menuItems: MenuItem[] = [
     popular: false,
     createdAt: new Date().toISOString(),
   },
+  // === MOLHOS — Salgados R$ 12,90 ===
+  { id: "item-molho-catupiry", name: "Catupiry", description: "Molho cremoso de Catupiry", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-cheddar", name: "Cheddar", description: "Molho sabor queijo cheddar", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-pizza", name: "Molho de Pizza", description: "Molho de tomate especial para pizza", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-sweet-chilli", name: "Sweet Chilli", description: "Molho agridoce de pimenta", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-maionese-grill", name: "Maionese Grill", description: "Maionese temperada para grill", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-chipotle", name: "Chipotle", description: "Molho defumado de chipotle", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-pasta-alho", name: "Pasta de Alho", description: "Pasta cremosa de alho", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-cream-cheese", name: "Cream Cheese", description: "Molho cremoso de cream cheese", category: "molhos", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  // === MOLHOS — Doces R$ 9,90 ===
+  { id: "item-molho-doce-leite", name: "Doce de Leite", description: "Molho de doce de leite", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-pistache", name: "Pistache", description: "Creme de pistache", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-brigadeiro", name: "Brigadeiro", description: "Molho de brigadeiro de chocolate", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-ovomaltine", name: "Ovomaltine", description: "Creme de Ovomaltine", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-molho-nutella", name: "Nutella", description: "Creme de avelã Nutella", category: "molhos", price: 9.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
 ];
 
 const menuCombos: MenuCombo[] = [];
