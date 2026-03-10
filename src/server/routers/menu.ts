@@ -45,6 +45,7 @@ export interface MenuItem {
   // Campos específicos de pizza
   sizePrices?: PizzaSizePrice[];
   crusts?: string[];
+  allowHalf?: boolean; // permite meio a meio
 }
 
 /** Subcategorias de pizza */
@@ -108,6 +109,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("mais_pedidas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-2",
@@ -122,6 +124,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("mais_pedidas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-pepperoni",
@@ -136,6 +139,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("mais_pedidas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-3queijos",
@@ -150,6 +154,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("mais_pedidas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-frango-req",
@@ -164,6 +169,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("mais_pedidas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-queijo",
@@ -178,6 +184,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("mais_pedidas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   // === CLÁSSICAS ===
   {
@@ -193,6 +200,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-3",
@@ -207,6 +215,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-cheddar-pepperoni",
@@ -221,6 +230,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-napolitana",
@@ -235,6 +245,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-corn-bacon",
@@ -249,6 +260,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-catuperoni",
@@ -263,6 +275,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-frango-caipira",
@@ -277,6 +290,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-veggie",
@@ -291,6 +305,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-5",
@@ -305,6 +320,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-pao-alho",
@@ -319,6 +335,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("classicas"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   // === ESPECIAIS ===
   {
@@ -334,6 +351,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-frango-grelhado",
@@ -348,6 +366,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-pepperrock",
@@ -362,6 +381,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-extravaganzza",
@@ -376,6 +396,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-meat-bacon",
@@ -390,6 +411,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-la-bianca",
@@ -404,6 +426,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-carne-seca-cc",
@@ -418,6 +441,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-egg-bacon",
@@ -432,6 +456,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-calabresa-esp",
@@ -446,6 +471,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   {
     id: "item-frango-cc",
@@ -460,6 +486,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
     sizePrices: getDefaultSizePrices("especiais"),
     crusts: ["tradicional", "fina", "superfina", "pan"],
+    allowHalf: true,
   },
   // === SANDUÍCHES ===
   {
@@ -797,6 +824,7 @@ export const menuRouter = router({
         cost: z.number().min(0),
       })).optional(),
       crusts: z.array(z.string()).optional(),
+      allowHalf: z.boolean().optional(),
       image: z.string().optional(),
     }))
     .mutation(({ input }) => {
@@ -804,12 +832,14 @@ export const menuRouter = router({
       const isPizza = input.category === "pizzas";
       const sizePrices = input.sizePrices ?? (isPizza && input.subcategory ? getDefaultSizePrices(input.subcategory) : undefined);
       const crusts = input.crusts ?? (isPizza ? ["tradicional", "fina", "superfina", "pan"] : undefined);
+      const allowHalf = input.allowHalf ?? (isPizza ? true : undefined);
 
       const item: MenuItem = {
         id: `item-${Date.now()}`,
         ...input,
         ...(sizePrices ? { sizePrices } : {}),
         ...(crusts ? { crusts } : {}),
+        ...(allowHalf !== undefined ? { allowHalf } : {}),
         active: true,
         popular: false,
         createdAt: new Date().toISOString(),
@@ -835,6 +865,7 @@ export const menuRouter = router({
         cost: z.number().min(0),
       })).optional(),
       crusts: z.array(z.string()).optional(),
+      allowHalf: z.boolean().optional(),
       image: z.string().optional(),
     }))
     .mutation(({ input }) => {

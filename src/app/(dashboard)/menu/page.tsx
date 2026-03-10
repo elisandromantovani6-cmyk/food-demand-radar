@@ -966,6 +966,7 @@ export default function MenuPage() {
                                 {item.sizePrices && item.sizePrices.length > 0 && (
                                   <p className="text-[10px] text-muted-foreground mt-0.5">
                                     {item.sizePrices.length} {item.sizePrices.length === 1 ? "tamanho" : "tamanhos"}
+                                    {item.allowHalf && " · ½ a ½"}
                                   </p>
                                 )}
                               </div>
@@ -1095,6 +1096,16 @@ export default function MenuPage() {
                                 <div>
                                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                     <Ruler className="w-3 h-3" /> Preços por Tamanho
+                                    {item.allowHalf && (
+                                      <span className="ml-auto text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full normal-case tracking-normal">
+                                        Meio a meio disponível
+                                      </span>
+                                    )}
+                                    {item.category === "sobremesas" && item.sizePrices && (
+                                      <span className="ml-auto text-[10px] font-medium text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full normal-case tracking-normal">
+                                        Somente 1 sabor
+                                      </span>
+                                    )}
                                   </p>
                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                     {(item.category === "pizzas" || isEditing
