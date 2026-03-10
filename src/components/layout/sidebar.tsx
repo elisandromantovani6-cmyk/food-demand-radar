@@ -21,6 +21,7 @@ import {
   Radar,
   LogOut,
   UtensilsCrossed,
+  MessageSquare,
 } from "lucide-react";
 
 const navGroups = [
@@ -44,6 +45,7 @@ const navGroups = [
     items: [
       { href: "/menu", label: "Cardápio", icon: UtensilsCrossed },
       { href: "/campaigns", label: "Campanhas", icon: Megaphone },
+      { href: "/whatsapp", label: "WhatsApp Bot", icon: MessageSquare },
       { href: "/expansion", label: "Expansão", icon: Navigation },
     ],
   },
