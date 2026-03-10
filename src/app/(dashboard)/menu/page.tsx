@@ -16,10 +16,14 @@ import { trpc } from "@/lib/trpc";
 
 const CATEGORIES = [
   { id: "pizzas", label: "Pizzas" },
+  { id: "sanduiches", label: "Sanduíches" },
+  { id: "acompanhamentos", label: "Acompanhamentos" },
   { id: "bebidas", label: "Bebidas" },
-  { id: "extras", label: "Extras" },
   { id: "sobremesas", label: "Sobremesas" },
+  { id: "molhos", label: "Molhos" },
+  { id: "borda_recheada", label: "Borda Recheada" },
   { id: "entradas", label: "Entradas" },
+  { id: "extras", label: "Extras" },
 ];
 
 export default function MenuPage() {
