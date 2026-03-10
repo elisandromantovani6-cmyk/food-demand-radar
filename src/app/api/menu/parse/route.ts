@@ -147,12 +147,14 @@ export async function POST(req: NextRequest) {
     // PDF
     if (fileName.endsWith(".pdf")) {
       try {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string }>;
-        const pdfData = await pdfParse(buffer);
-        textContent = pdfData.text;
-      } catch {
+        const buffer = await file.arrayBuffer();
+        const { PDFParse } = await import("pdf-parse");
+        const pdf = new PDFParse({ data: new Uint8Array(buffer) });
+        const result = await pdf.getText();
+        textContent = result.text;
+        await pdf.destroy();
+      } catch (e) {
+        console.error("PDF parse error:", e);
         return NextResponse.json({
           error: "Não foi possível ler o PDF. Tente enviar como .txt ou .csv",
         }, { status: 400 });
