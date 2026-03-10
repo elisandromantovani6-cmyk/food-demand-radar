@@ -13,12 +13,16 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       await login(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao entrar");
     } finally {
       setLoading(false);
     }
@@ -67,6 +71,12 @@ export default function LoginPage() {
               />
             </div>
 
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -85,11 +95,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="mt-6 p-3 bg-primary/8 border border-primary/10 rounded-lg">
-            <p className="text-xs text-primary text-center">
-              Modo demo: qualquer e-mail/senha funciona
-            </p>
-          </div>
         </CardContent>
       </Card>
     </>

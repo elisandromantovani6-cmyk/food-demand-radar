@@ -14,12 +14,16 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       await register(name, email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao criar conta");
     } finally {
       setLoading(false);
     }
@@ -54,6 +58,12 @@ export default function RegisterPage() {
               <Label htmlFor="password" className="text-sm">Senha</Label>
               <Input id="password" type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="bg-secondary border-border" />
             </div>
+
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
 
             <button type="submit" disabled={loading} className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50">
               {loading ? "Criando..." : "Criar Conta"}

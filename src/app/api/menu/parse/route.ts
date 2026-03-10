@@ -86,8 +86,9 @@ async function pdfToImages(data: Uint8Array): Promise<string[]> {
       const canvas = createCanvas(viewport.width, viewport.height);
       const context = canvas.getContext("2d");
 
-      await page.render({
-        canvasContext: context as unknown as CanvasRenderingContext2D,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (page.render as any)({
+        canvasContext: context,
         viewport,
       }).promise;
 

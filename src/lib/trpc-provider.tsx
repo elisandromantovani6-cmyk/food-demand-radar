@@ -5,6 +5,7 @@ import { httpBatchLink } from "@trpc/client";
 import { useState } from "react";
 import superjson from "superjson";
 import { trpc } from "./trpc";
+import { supabase } from "@/lib/supabase/client";
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -22,6 +23,13 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: "/api/trpc",
           transformer: superjson,
+          async headers() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+              return { authorization: `Bearer ${session.access_token}` };
+            }
+            return {};
+          },
         }),
       ],
     })
