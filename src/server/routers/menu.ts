@@ -35,6 +35,7 @@ export interface MenuItem {
   name: string;
   description: string;
   category: string;
+  subcategory?: string;
   price: number;
   cost: number;
   image?: string;
@@ -45,6 +46,13 @@ export interface MenuItem {
   sizePrices?: PizzaSizePrice[];
   crusts?: string[];
 }
+
+/** Subcategorias de pizza */
+export const PIZZA_SUBCATEGORIES = [
+  { id: "mais_pedidas", label: "Mais Pedidas" },
+  { id: "classicas", label: "Clássicas" },
+  { id: "especiais", label: "Especiais" },
+] as const;
 
 export interface MenuCombo {
   id: string;
@@ -64,6 +72,7 @@ const menuItems: MenuItem[] = [
     name: "Pizza Margherita",
     description: "Molho de tomate, mussarela, manjericão fresco",
     category: "pizzas",
+    subcategory: "mais_pedidas",
     price: 39.90,
     cost: 12.50,
     active: true,
@@ -82,6 +91,7 @@ const menuItems: MenuItem[] = [
     name: "Pizza Calabresa",
     description: "Calabresa fatiada, cebola, mussarela, azeitonas",
     category: "pizzas",
+    subcategory: "mais_pedidas",
     price: 42.90,
     cost: 14.00,
     active: true,
@@ -100,6 +110,7 @@ const menuItems: MenuItem[] = [
     name: "Pizza Quatro Queijos",
     description: "Mussarela, provolone, gorgonzola, parmesão",
     category: "pizzas",
+    subcategory: "especiais",
     price: 46.90,
     cost: 16.00,
     active: true,
@@ -118,6 +129,7 @@ const menuItems: MenuItem[] = [
     name: "Pizza Frango com Catupiry",
     description: "Frango desfiado, catupiry, milho, mussarela",
     category: "pizzas",
+    subcategory: "mais_pedidas",
     price: 44.90,
     cost: 15.00,
     active: true,
@@ -136,6 +148,7 @@ const menuItems: MenuItem[] = [
     name: "Pizza Portuguesa",
     description: "Presunto, ovos, cebola, ervilha, mussarela, azeitonas",
     category: "pizzas",
+    subcategory: "classicas",
     price: 44.90,
     cost: 14.50,
     active: true,
@@ -219,6 +232,7 @@ export const menuRouter = router({
     sizes: PIZZA_SIZES,
     crusts: CRUST_TYPES,
     stuffedCrust: STUFFED_CRUST_OPTIONS,
+    subcategories: PIZZA_SUBCATEGORIES,
   })),
 
   addItem: publicProcedure
@@ -226,6 +240,7 @@ export const menuRouter = router({
       name: z.string().min(1),
       description: z.string(),
       category: z.string(),
+      subcategory: z.string().optional(),
       price: z.number().positive(),
       cost: z.number().min(0),
       sizePrices: z.array(z.object({
@@ -254,6 +269,7 @@ export const menuRouter = router({
       name: z.string().optional(),
       description: z.string().optional(),
       category: z.string().optional(),
+      subcategory: z.string().optional(),
       price: z.number().positive().optional(),
       cost: z.number().min(0).optional(),
       active: z.boolean().optional(),

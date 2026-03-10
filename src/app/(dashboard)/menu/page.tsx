@@ -28,13 +28,13 @@ export default function MenuPage() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [comboForm, setComboForm] = useState({ name: "", description: "", price: "" });
   const [itemForm, setItemForm] = useState({
-    name: "", description: "", category: "pizzas", price: "", cost: "",
+    name: "", description: "", category: "pizzas", subcategory: "", price: "", cost: "",
   });
   const [filter, setFilter] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{
-    name: string; description: string; category: string; price: string; cost: string;
-  }>({ name: "", description: "", category: "", price: "", cost: "" });
+    name: string; description: string; category: string; subcategory: string; price: string; cost: string;
+  }>({ name: "", description: "", category: "", subcategory: "", price: "", cost: "" });
   const [expandedPizza, setExpandedPizza] = useState<string | null>(null);
 
   // Pizza form states
@@ -149,7 +149,7 @@ export default function MenuPage() {
     onSuccess: () => {
       utils.menu.getItems.invalidate();
       utils.menu.suggestCombos.invalidate();
-      setItemForm({ name: "", description: "", category: "pizzas", price: "", cost: "" });
+      setItemForm({ name: "", description: "", category: "pizzas", subcategory: "", price: "", cost: "" });
       setShowAddItem(false);
     },
   });
@@ -199,6 +199,7 @@ export default function MenuPage() {
       name: itemForm.name,
       description: itemForm.description,
       category: itemForm.category,
+      ...(isPizza && itemForm.subcategory ? { subcategory: itemForm.subcategory } : {}),
       price: parseFloat(itemForm.price),
       cost: parseFloat(itemForm.cost) || 0,
       ...(sizePrices && sizePrices.length > 0 ? { sizePrices } : {}),
@@ -218,12 +219,13 @@ export default function MenuPage() {
     });
   };
 
-  const startEditing = (item: { id: string; name: string; description: string; category: string; price: number; cost: number; image?: string; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
+  const startEditing = (item: { id: string; name: string; description: string; category: string; subcategory?: string; price: number; cost: number; image?: string; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
     setEditingId(item.id);
     setEditForm({
       name: item.name,
       description: item.description,
       category: item.category,
+      subcategory: item.subcategory ?? "",
       price: item.price.toFixed(2),
       cost: item.cost.toFixed(2),
     });
@@ -254,6 +256,7 @@ export default function MenuPage() {
       name: editForm.name,
       description: editForm.description,
       category: editForm.category,
+      ...(editForm.subcategory ? { subcategory: editForm.subcategory } : {}),
       price: parseFloat(editForm.price),
       cost: parseFloat(editForm.cost) || 0,
       active: currentActive,
@@ -273,7 +276,7 @@ export default function MenuPage() {
     setInlineSizeForm({ price: price > 0 ? price.toFixed(2) : "", cost: cost > 0 ? cost.toFixed(2) : "" });
   };
 
-  const saveInlineSizeEdit = (item: { id: string; name: string; description: string; category: string; price: number; cost: number; active: boolean; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
+  const saveInlineSizeEdit = (item: { id: string; name: string; description: string; category: string; subcategory?: string; price: number; cost: number; active: boolean; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
     if (!inlineEditSize) return;
     const newPrice = parseFloat(inlineSizeForm.price) || 0;
     const newCost = parseFloat(inlineSizeForm.cost) || 0;
@@ -288,6 +291,7 @@ export default function MenuPage() {
       name: item.name,
       description: item.description,
       category: item.category,
+      ...(item.subcategory ? { subcategory: item.subcategory } : {}),
       price: item.price,
       cost: item.cost,
       active: item.active,
@@ -423,6 +427,27 @@ export default function MenuPage() {
                       </button>
                     ))}
                   </div>
+                  {itemForm.category === "pizzas" && pizzaConfig?.subcategories && (
+                    <div className="mt-2">
+                      <Label className="text-xs">Subcategoria da Pizza</Label>
+                      <div className="flex flex-wrap gap-2 mt-1.5">
+                        {pizzaConfig.subcategories.map(sub => (
+                          <button
+                            key={sub.id}
+                            onClick={() => setItemForm({ ...itemForm, subcategory: sub.id })}
+                            className={cn(
+                              "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                              itemForm.subcategory === sub.id
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border hover:border-border/80 text-muted-foreground"
+                            )}
+                          >
+                            {sub.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="space-y-3">
@@ -789,7 +814,12 @@ export default function MenuPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map(item => {
+                    {(() => {
+                      // Agrupar pizzas por subcategoria
+                      const isPizzaView = filter === "pizzas" || (!filter && items.some(i => i.category === "pizzas"));
+                      const subcats = pizzaConfig?.subcategories ?? [];
+
+                      const renderItem = (item: typeof items[number]) => {
                       const isEditing = editingId === item.id;
                       const editPrice = isEditing ? parseFloat(editForm.price) || 0 : item.price;
                       const editCost = isEditing ? parseFloat(editForm.cost) || 0 : item.cost;
@@ -880,17 +910,38 @@ export default function MenuPage() {
                           </td>
                           <td className="py-2.5">
                             {isEditing ? (
-                              <select
-                                value={editForm.category}
-                                onChange={e => setEditForm({ ...editForm, category: e.target.value })}
-                                className="bg-secondary border border-border rounded-md text-xs px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary"
-                              >
-                                {CATEGORIES.map(cat => (
-                                  <option key={cat.id} value={cat.id}>{cat.label}</option>
-                                ))}
-                              </select>
+                              <div>
+                                <select
+                                  value={editForm.category}
+                                  onChange={e => setEditForm({ ...editForm, category: e.target.value })}
+                                  className="bg-secondary border border-border rounded-md text-xs px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary"
+                                >
+                                  {CATEGORIES.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                  ))}
+                                </select>
+                                {editForm.category === "pizzas" && pizzaConfig?.subcategories && (
+                                  <select
+                                    value={editForm.subcategory}
+                                    onChange={e => setEditForm({ ...editForm, subcategory: e.target.value })}
+                                    className="bg-secondary border border-border rounded-md text-[10px] px-1.5 py-1 mt-1 block focus:outline-none focus:ring-1 focus:ring-primary"
+                                  >
+                                    <option value="">Subcategoria...</option>
+                                    {pizzaConfig.subcategories.map(sub => (
+                                      <option key={sub.id} value={sub.id}>{sub.label}</option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
                             ) : (
-                              <span className="px-2 py-0.5 rounded-md bg-accent/50 text-xs capitalize cursor-pointer" onClick={() => startEditing(item)}>{item.category}</span>
+                              <div className="cursor-pointer" onClick={() => startEditing(item)}>
+                                <span className="px-2 py-0.5 rounded-md bg-accent/50 text-xs capitalize">{item.category}</span>
+                                {item.subcategory && pizzaConfig?.subcategories && (
+                                  <p className="text-[10px] text-muted-foreground mt-0.5 px-1">
+                                    {pizzaConfig.subcategories.find(s => s.id === item.subcategory)?.label ?? item.subcategory}
+                                  </p>
+                                )}
+                              </div>
                             )}
                           </td>
                           <td className="py-2.5">
@@ -906,7 +957,14 @@ export default function MenuPage() {
                                 />
                               </div>
                             ) : (
-                              <span className="font-semibold tabular-nums cursor-pointer" onClick={() => startEditing(item)}>R$ {item.price.toFixed(2)}</span>
+                              <div className="cursor-pointer" onClick={() => startEditing(item)}>
+                                <span className="font-semibold tabular-nums">R$ {item.price.toFixed(2)}</span>
+                                {item.category === "pizzas" && item.sizePrices && item.sizePrices.length > 0 && (
+                                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                                    Média · {item.sizePrices.length} tamanhos
+                                  </p>
+                                )}
+                              </div>
                             )}
                           </td>
                           <td className="py-2.5">
@@ -1199,7 +1257,61 @@ export default function MenuPage() {
                         )}
                         </React.Fragment>
                       );
-                    })}
+                      };
+
+                      // Se está em view de pizzas, agrupar por subcategoria
+                      if (isPizzaView && subcats.length > 0) {
+                        const pizzas = items.filter(i => i.category === "pizzas");
+                        const nonPizzas = items.filter(i => i.category !== "pizzas");
+
+                        return (
+                          <>
+                            {subcats.map(sub => {
+                              const subItems = pizzas.filter(i => i.subcategory === sub.id);
+                              if (subItems.length === 0) return null;
+                              return (
+                                <React.Fragment key={sub.id}>
+                                  <tr>
+                                    <td colSpan={8} className="pt-4 pb-2 px-1">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                                          {sub.label}
+                                        </span>
+                                        <span className="text-[10px] text-muted-foreground bg-accent/50 px-1.5 py-0.5 rounded">
+                                          {subItems.length} {subItems.length === 1 ? "pizza" : "pizzas"}
+                                        </span>
+                                        <div className="flex-1 h-px bg-border/30" />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {subItems.map(renderItem)}
+                                </React.Fragment>
+                              );
+                            })}
+                            {/* Pizzas sem subcategoria */}
+                            {pizzas.filter(i => !i.subcategory).length > 0 && (
+                              <>
+                                <tr>
+                                  <td colSpan={8} className="pt-4 pb-2 px-1">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                        Outras
+                                      </span>
+                                      <div className="flex-1 h-px bg-border/30" />
+                                    </div>
+                                  </td>
+                                </tr>
+                                {pizzas.filter(i => !i.subcategory).map(renderItem)}
+                              </>
+                            )}
+                            {/* Itens não-pizza (quando filter é null) */}
+                            {nonPizzas.map(renderItem)}
+                          </>
+                        );
+                      }
+
+                      return items.map(renderItem);
+                    })()}
                   </tbody>
                 </table>
               </div>
