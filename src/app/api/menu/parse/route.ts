@@ -254,8 +254,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Arquivo está vazio (0 bytes)." }, { status: 400 });
     }
 
-    if (fileSize > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Arquivo muito grande (máx 5MB)" }, { status: 400 });
+    const maxSize = /\.pdf$/.test(fileName) ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (fileSize > maxSize) {
+      return NextResponse.json({
+        error: `Arquivo muito grande (máx ${/\.pdf$/.test(fileName) ? "20MB" : "5MB"})`,
+      }, { status: 400 });
     }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
