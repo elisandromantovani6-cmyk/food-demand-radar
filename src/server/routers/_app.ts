@@ -8,6 +8,7 @@ import { dataRouter } from "./data";
 import { kpisRouter } from "./kpis";
 import { menuRouter } from "./menu";
 import { whatsappRouter } from "./whatsapp";
+import { onboardingRouter } from "./onboarding";
 
 export const appRouter = router({
   demand: demandRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   kpis: kpisRouter,
   menu: menuRouter,
   whatsapp: whatsappRouter,
+  onboarding: onboardingRouter,
 });
 
 export type AppRouter = typeof appRouter;

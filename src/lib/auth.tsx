@@ -136,40 +136,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = useCallback(async (data: { restaurantName: string; foodCategory: string; city: string }) => {
     if (!user) return;
 
-    const slug = data.restaurantName
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    // Chamar API do servidor (usa service role, ignora RLS)
+    const res = await fetch("/api/trpc/onboarding.completeOnboarding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+      },
+      body: JSON.stringify({ json: data }),
+    });
 
-    // Criar tenant
-    const { data: tenant, error: tenantError } = await supabase
-      .from("tenants")
-      .insert({
-        name: data.restaurantName,
-        slug: `${slug}-${Date.now()}`,
-        food_category: data.foodCategory,
-        city: data.city,
-        onboarding_completed: true,
-      })
-      .select()
-      .single();
+    const result = await res.json();
+    if (result.error) throw new Error(result.error.message);
 
-    if (tenantError) throw new Error(tenantError.message);
-
-    // Vincular profile ao tenant
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({ tenant_id: tenant.id })
-      .eq("id", user.id);
-
-    if (profileError) throw new Error(profileError.message);
+    const { tenantId, restaurantName } = result.result.data.json;
 
     setUser({
       ...user,
-      restaurantName: data.restaurantName,
-      tenantId: tenant.id,
+      restaurantName,
+      tenantId,
       onboardingCompleted: true,
     });
 

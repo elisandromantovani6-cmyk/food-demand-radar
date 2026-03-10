@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../trpc";
-import { menuCombos, menuItems } from "./menu";
+import { router, publicProcedure, supabaseAdmin } from "../trpc";
 
 export interface WhatsAppConfig {
   enabled: boolean;
@@ -355,22 +354,39 @@ function getStats() {
 export const whatsappRouter = router({
   getConfig: publicProcedure.query(() => config),
 
-  getSystemPrompt: publicProcedure.query(() => {
-    // Montar texto dos combos ativos
-    const activeCombos = menuCombos.filter(c => c.active);
-    let combosText: string;
-    if (activeCombos.length === 0) {
-      combosText = "Nenhum combo ativo no momento. NÃO sugira combos ao cliente.";
-    } else {
-      combosText = activeCombos.map(combo => {
-        const itemNames = combo.items
-          .map(id => menuItems.find(i => i.id === id)?.name)
-          .filter(Boolean)
-          .join(" + ");
-        const discount = Math.round((1 - combo.comboPrice / combo.originalPrice) * 100);
-        const economy = (combo.originalPrice - combo.comboPrice).toFixed(2);
-        return `🔥 ${combo.name} — R$${combo.comboPrice.toFixed(2)} (economia de R$${economy}, ${discount}% off)\n   ${itemNames}\n   ${combo.description}`;
-      }).join("\n\n");
+  getSystemPrompt: publicProcedure.query(async ({ ctx }) => {
+    // Montar texto dos combos ativos do banco
+    let combosText = "Nenhum combo ativo no momento. NÃO sugira combos ao cliente.";
+
+    if (ctx.tenantId) {
+      const { data: combos } = await supabaseAdmin
+        .from("menu_combos")
+        .select("*")
+        .eq("tenant_id", ctx.tenantId)
+        .eq("active", true);
+
+      if (combos && combos.length > 0) {
+        // Buscar nomes dos itens
+        const allItemIds = combos.flatMap(c => (c.items as string[]) ?? []);
+        const { data: items } = await supabaseAdmin
+          .from("menu_items")
+          .select("id, name")
+          .in("id", allItemIds.length > 0 ? allItemIds : ["__none__"]);
+
+        const itemMap = new Map((items ?? []).map(i => [i.id, i.name]));
+
+        combosText = combos.map(combo => {
+          const itemNames = ((combo.items as string[]) ?? [])
+            .map(id => itemMap.get(id))
+            .filter(Boolean)
+            .join(" + ");
+          const comboPrice = Number(combo.combo_price);
+          const originalPrice = Number(combo.original_price);
+          const discount = Math.round((1 - comboPrice / originalPrice) * 100);
+          const economy = (originalPrice - comboPrice).toFixed(2);
+          return `🔥 ${combo.name} — R$${comboPrice.toFixed(2)} (economia de R$${economy}, ${discount}% off)\n   ${itemNames}\n   ${combo.description ?? ""}`;
+        }).join("\n\n");
+      }
     }
 
     return BOT_SYSTEM_PROMPT
