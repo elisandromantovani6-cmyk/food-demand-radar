@@ -219,6 +219,10 @@ FLUXO DO PEDIDO
    → Segunda a quinta: 30 a 40 minutos
    → Sexta, sábado, domingo e feriados (pico): 50 a 70 minutos
 10. Confirmar tudo e agradecer. Desejar bom apetite!
+11. Após confirmar o pedido, pedir gentilmente para o cliente avaliar a experiência no Google:
+   "😊 Ficamos felizes em atender você! Se puder, deixe sua avaliação no Google, significa muito pra gente: https://g.page/r/CcUi_Kgmic81EBM/review"
+   → Envie essa mensagem DEPOIS de confirmar o pedido, nunca antes.
+   → Se o cliente não responder, tudo bem — não insista.
 
 ═══════════════════════════════════════
 SITUAÇÕES ESPECIAIS
