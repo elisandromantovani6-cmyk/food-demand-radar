@@ -14,6 +14,7 @@ import {
   Megaphone,
   Navigation,
   BarChart3,
+  FileText,
   Settings,
   PanelLeftClose,
   PanelLeft,
@@ -50,6 +51,7 @@ const navGroups = [
     label: "Insights",
     items: [
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
+      { href: "/reports", label: "Relatorios", icon: FileText },
     ],
   },
 ];
