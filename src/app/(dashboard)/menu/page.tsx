@@ -43,6 +43,10 @@ export default function MenuPage() {
   const [editSizePricesForm, setEditSizePricesForm] = useState<Record<string, { price: string; cost: string }>>({});
   const [editCrustsForm, setEditCrustsForm] = useState<Set<string>>(new Set());
 
+  // Inline size price editing (without full edit mode)
+  const [inlineEditSize, setInlineEditSize] = useState<{ itemId: string; sizeId: string } | null>(null);
+  const [inlineSizeForm, setInlineSizeForm] = useState<{ price: string; cost: string }>({ price: "", cost: "" });
+
   // Image upload states
   const [itemImage, setItemImage] = useState<string>("");
   const [editItemImage, setEditItemImage] = useState<string>("");
@@ -262,6 +266,35 @@ export default function MenuPage() {
 
   const cancelEdit = () => {
     setEditingId(null);
+  };
+
+  const startInlineSizeEdit = (itemId: string, sizeId: string, price: number, cost: number) => {
+    setInlineEditSize({ itemId, sizeId });
+    setInlineSizeForm({ price: price > 0 ? price.toFixed(2) : "", cost: cost > 0 ? cost.toFixed(2) : "" });
+  };
+
+  const saveInlineSizeEdit = (item: { id: string; name: string; description: string; category: string; price: number; cost: number; active: boolean; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
+    if (!inlineEditSize) return;
+    const newPrice = parseFloat(inlineSizeForm.price) || 0;
+    const newCost = parseFloat(inlineSizeForm.cost) || 0;
+    const updatedSizePrices = (item.sizePrices ?? []).map(s =>
+      s.sizeId === inlineEditSize.sizeId ? { ...s, price: newPrice, cost: newCost } : s
+    );
+    if (!updatedSizePrices.find(s => s.sizeId === inlineEditSize.sizeId) && newPrice > 0) {
+      updatedSizePrices.push({ sizeId: inlineEditSize.sizeId, price: newPrice, cost: newCost });
+    }
+    updateItem.mutate({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      category: item.category,
+      price: item.price,
+      cost: item.cost,
+      active: item.active,
+      sizePrices: updatedSizePrices.filter(s => s.price > 0),
+      ...(item.crusts ? { crusts: item.crusts } : {}),
+    });
+    setInlineEditSize(null);
   };
 
   const toggleSelectItem = (id: string) => {
@@ -1041,10 +1074,57 @@ export default function MenuPage() {
                                                 />
                                               </div>
                                             </div>
+                                          ) : inlineEditSize?.itemId === item.id && inlineEditSize?.sizeId === size.id ? (
+                                            <div className="space-y-1">
+                                              <div className="flex items-center gap-1">
+                                                <span className="text-[10px] text-muted-foreground w-7">R$</span>
+                                                <input
+                                                  type="number"
+                                                  step="0.01"
+                                                  autoFocus
+                                                  value={inlineSizeForm.price}
+                                                  onChange={e => setInlineSizeForm(prev => ({ ...prev, price: e.target.value }))}
+                                                  onKeyDown={e => { if (e.key === "Enter") saveInlineSizeEdit(item); if (e.key === "Escape") setInlineEditSize(null); }}
+                                                  className="w-full bg-secondary border border-primary/50 rounded px-1.5 py-0.5 text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-primary"
+                                                  placeholder="Preço"
+                                                />
+                                              </div>
+                                              <div className="flex items-center gap-1">
+                                                <span className="text-[10px] text-muted-foreground w-7">C$</span>
+                                                <input
+                                                  type="number"
+                                                  step="0.01"
+                                                  value={inlineSizeForm.cost}
+                                                  onChange={e => setInlineSizeForm(prev => ({ ...prev, cost: e.target.value }))}
+                                                  onKeyDown={e => { if (e.key === "Enter") saveInlineSizeEdit(item); if (e.key === "Escape") setInlineEditSize(null); }}
+                                                  className="w-full bg-secondary border border-border rounded px-1.5 py-0.5 text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-primary"
+                                                  placeholder="Custo"
+                                                />
+                                              </div>
+                                              <div className="flex items-center gap-1 pt-0.5">
+                                                <button
+                                                  onClick={() => saveInlineSizeEdit(item)}
+                                                  className="text-[10px] px-2 py-0.5 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                                                >
+                                                  Salvar
+                                                </button>
+                                                <button
+                                                  onClick={() => setInlineEditSize(null)}
+                                                  className="text-[10px] px-2 py-0.5 rounded bg-secondary text-muted-foreground hover:bg-accent transition-colors"
+                                                >
+                                                  Cancelar
+                                                </button>
+                                              </div>
+                                            </div>
                                           ) : (
-                                            <div className="space-y-0.5">
+                                            <div
+                                              className="space-y-0.5 cursor-pointer group/size hover:bg-accent/30 rounded -m-1 p-1 transition-colors"
+                                              onClick={() => startInlineSizeEdit(item.id, size.id, sPrice, sCost)}
+                                              title="Clique para editar preço"
+                                            >
                                               <p className="text-sm font-bold tabular-nums text-emerald-400">
                                                 {sPrice > 0 ? `R$ ${sPrice.toFixed(2)}` : "—"}
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline ml-1 opacity-0 group-hover/size:opacity-60 transition-opacity"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                                               </p>
                                               {sPrice > 0 && (
                                                 <p className="text-[10px] text-muted-foreground">
