@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Bell, ChevronRight, Search } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useNotifications } from "@/components/notifications-panel";
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Command Center",
@@ -10,6 +11,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/competition": "Mapa de Concorrência",
   "/forecast": "Previsão de Demanda",
   "/trends": "Sabores em Tendência",
+  "/menu": "Cardápio",
   "/campaigns": "Campanhas",
   "/expansion": "Radar de Expansão",
   "/analytics": "Analytics",
@@ -19,6 +21,7 @@ const PAGE_TITLES: Record<string, string> = {
 export function Header() {
   const pathname = usePathname();
   const title = PAGE_TITLES[pathname] || "Food Demand Radar";
+  const { toggle: toggleNotifications, unreadCount } = useNotifications();
 
   const { data: weather } = trpc.data.weather.useQuery(undefined, {
     refetchInterval: 300000,
@@ -35,8 +38,11 @@ export function Header() {
 
       {/* Right section */}
       <div className="flex items-center gap-2">
-        {/* Search trigger */}
-        <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-sm text-muted-foreground hover:bg-accent transition-colors">
+        {/* Search trigger — opens CommandPalette via Ctrl+K */}
+        <button
+          onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }))}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-sm text-muted-foreground hover:bg-accent transition-colors"
+        >
           <Search className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Buscar...</span>
           <kbd className="hidden sm:inline ml-2 text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded text-muted-foreground/70">Ctrl K</kbd>
@@ -52,11 +58,16 @@ export function Header() {
         )}
 
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg hover:bg-accent transition-colors">
+        <button
+          onClick={toggleNotifications}
+          className="relative p-2 rounded-lg hover:bg-accent transition-colors"
+        >
           <Bell className="w-4 h-4 text-muted-foreground" />
-          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
-            3
-          </span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
         </button>
       </div>
     </header>

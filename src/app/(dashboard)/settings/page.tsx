@@ -31,7 +31,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <Label htmlFor="address">Endereço</Label>
-              <Input id="address" defaultValue="Av. Brasil, 1200 - Centro, Tangara da Serra - MT" className="mt-1 bg-secondary border-border" />
+              <Input id="address" defaultValue="Av. Brasil, 1200 - Centro, Tangará da Serra - MT" className="mt-1 bg-secondary border-border" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -40,7 +40,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <Label htmlFor="city">Cidade</Label>
-                <Input id="city" defaultValue="Tangara da Serra" className="mt-1 bg-secondary border-border" />
+                <Input id="city" defaultValue="Tangará da Serra" className="mt-1 bg-secondary border-border" />
               </div>
             </div>
           </div>

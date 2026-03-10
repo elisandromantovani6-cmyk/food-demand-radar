@@ -19,6 +19,7 @@ import {
   PanelLeft,
   Radar,
   LogOut,
+  UtensilsCrossed,
 } from "lucide-react";
 
 const navGroups = [
@@ -38,8 +39,9 @@ const navGroups = [
     ],
   },
   {
-    label: "Actions",
+    label: "Gestão",
     items: [
+      { href: "/menu", label: "Cardápio", icon: UtensilsCrossed },
       { href: "/campaigns", label: "Campanhas", icon: Megaphone },
       { href: "/expansion", label: "Expansão", icon: Navigation },
     ],

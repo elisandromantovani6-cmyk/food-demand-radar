@@ -7,7 +7,7 @@ import { AlertTriangle, Shield, Users } from "lucide-react";
 
 const competitionData = [
   { name: "Centro", pizzarias: 8, population: 12000, ratio: 0.67, score: 70, level: "alta" },
-  { name: "Progresso", pizzarias: 4, population: 6200, ratio: 0.65, score: 40, level: "media" },
+  { name: "Progresso", pizzarias: 4, population: 6200, ratio: 0.65, score: 40, level: "média" },
   { name: "Jardim Europa", pizzarias: 3, population: 5500, ratio: 0.55, score: 35, level: "baixa" },
   { name: "Parque Universitario", pizzarias: 3, population: 3500, ratio: 0.86, score: 30, level: "baixa" },
   { name: "Triangulo", pizzarias: 2, population: 3800, ratio: 0.53, score: 25, level: "baixa" },
@@ -30,7 +30,7 @@ const competitionData = [
 
 const levelConfig = {
   alta: { className: "bg-red-500/15 text-red-400 border-red-500/20", barColor: "bg-red-500" },
-  media: { className: "bg-amber-500/15 text-amber-400 border-amber-500/20", barColor: "bg-amber-500" },
+  "média": { className: "bg-amber-500/15 text-amber-400 border-amber-500/20", barColor: "bg-amber-500" },
   baixa: { className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20", barColor: "bg-emerald-500" },
 };
 

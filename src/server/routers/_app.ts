@@ -6,6 +6,7 @@ import { trendsRouter } from "./trends";
 import { expansionRouter } from "./expansion";
 import { dataRouter } from "./data";
 import { kpisRouter } from "./kpis";
+import { menuRouter } from "./menu";
 
 export const appRouter = router({
   demand: demandRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   expansion: expansionRouter,
   data: dataRouter,
   kpis: kpisRouter,
+  menu: menuRouter,
 });
 
 export type AppRouter = typeof appRouter;

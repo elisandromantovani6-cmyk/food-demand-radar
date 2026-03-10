@@ -10,8 +10,8 @@ export default function DemandRadarPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-zinc-900">Demand Radar</h1>
-        <p className="text-sm text-zinc-500">Mapa de demanda em tempo real de Tangara da Serra</p>
+        <h1 className="text-xl font-semibold tracking-tight">Demand Radar</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Mapa de demanda em tempo real de Tangará da Serra</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

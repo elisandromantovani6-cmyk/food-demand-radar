@@ -58,7 +58,7 @@ export default function TrendsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Sabores em Tendencia</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Monitoramento de sabores mais buscados em Tangara da Serra</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Monitoramento de sabores mais buscados em Tangará da Serra</p>
       </div>
 
       <div className="grid grid-cols-12 gap-4">

@@ -45,7 +45,7 @@ export default function ExpansionPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Radar de Expansao</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Melhores bairros para abrir novas unidades em Tangara da Serra</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Melhores bairros para abrir novas unidades em Tangará da Serra</p>
       </div>
 
       {/* Hero cards - top 3 */}
@@ -83,7 +83,7 @@ export default function ExpansionPage() {
                   <span className="font-semibold text-foreground tabular-nums">{item.demandScore}/100</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Concorrencia</span>
+                  <span>Concorrência</span>
                   <span className="font-semibold text-foreground tabular-nums">{item.competitionScore}/100</span>
                 </div>
                 <div className="flex justify-between">

@@ -18,7 +18,7 @@ const FOOD_CATEGORIES = [
 ];
 
 const CITIES = [
-  "Tangara da Serra - MT",
+  "Tangará da Serra - MT",
   "Cuiaba - MT",
   "Rondonopolis - MT",
   "Sinop - MT",
@@ -29,7 +29,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [restaurantName, setRestaurantName] = useState("");
   const [foodCategory, setFoodCategory] = useState("pizza");
-  const [city, setCity] = useState("Tangara da Serra - MT");
+  const [city, setCity] = useState("Tangará da Serra - MT");
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
