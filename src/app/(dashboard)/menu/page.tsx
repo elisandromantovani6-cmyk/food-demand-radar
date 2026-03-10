@@ -963,9 +963,9 @@ export default function MenuPage() {
                             ) : (
                               <div className="cursor-pointer" onClick={() => startEditing(item)}>
                                 <span className="font-semibold tabular-nums">R$ {item.price.toFixed(2)}</span>
-                                {item.category === "pizzas" && item.sizePrices && item.sizePrices.length > 0 && (
+                                {item.sizePrices && item.sizePrices.length > 0 && (
                                   <p className="text-[10px] text-muted-foreground mt-0.5">
-                                    Média · {item.sizePrices.length} tamanhos
+                                    {item.sizePrices.length} {item.sizePrices.length === 1 ? "tamanho" : "tamanhos"}
                                   </p>
                                 )}
                               </div>
@@ -1056,7 +1056,7 @@ export default function MenuPage() {
                               </div>
                             ) : (
                               <div className="flex items-center justify-end gap-1">
-                                {item.category === "pizzas" && item.sizePrices && (
+                                {item.sizePrices && item.sizePrices.length > 0 && (
                                   <button
                                     onClick={() => setExpandedPizza(expandedPizza === item.id ? null : item.id)}
                                     className={cn(
@@ -1087,7 +1087,7 @@ export default function MenuPage() {
                           </td>
                         </tr>
                         {/* Linha expandida com tamanhos da pizza */}
-                        {item.category === "pizzas" && (expandedPizza === item.id || isEditing) && pizzaConfig && (
+                        {(item.sizePrices || item.category === "pizzas") && (expandedPizza === item.id || isEditing) && pizzaConfig && (
                           <tr className="bg-accent/10">
                             <td colSpan={8} className="py-3 px-4">
                               <div className="space-y-3">
@@ -1097,7 +1097,10 @@ export default function MenuPage() {
                                     <Ruler className="w-3 h-3" /> Preços por Tamanho
                                   </p>
                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                    {pizzaConfig.sizes.map(size => {
+                                    {(item.category === "pizzas" || isEditing
+                                      ? pizzaConfig.sizes
+                                      : pizzaConfig.sizes.filter(s => item.sizePrices?.some(sp => sp.sizeId === s.id))
+                                    ).map(size => {
                                       const sp = isEditing
                                         ? editSizePricesForm[size.id]
                                         : item.sizePrices?.find(s => s.sizeId === size.id);
