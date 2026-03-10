@@ -3,6 +3,8 @@ import { stripe, PLANS, type PlanId } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
+  if (!stripe) return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
+
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
