@@ -529,6 +529,7 @@ const menuItems: MenuItem[] = [
     createdAt: new Date().toISOString(),
   },
   // === BEBIDAS ===
+  { id: "item-refri-2l", name: "Refrigerante 2L", description: "Coca-Cola, Coca Zero, Fanta Uva, Fanta Laranja, Kuat, Sprite Zero, Sprite", category: "bebidas", price: 15.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
   { id: "item-refri-500", name: "Refrigerante 500ml", description: "Coca-Cola, Coca Zero ou Fanta Laranja", category: "bebidas", price: 12.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
   { id: "item-refri-lata", name: "Refrigerante Lata", description: "Coca-Cola, Coca Zero, Fanta Laranja, Sprite, Kuat", category: "bebidas", price: 10.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
   { id: "item-suco-dellvalle", name: "Suco Dell Valle", description: "Pêssego, Uva ou Maracujá", category: "bebidas", price: 10.90, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
