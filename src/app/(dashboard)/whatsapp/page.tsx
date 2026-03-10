@@ -40,6 +40,9 @@ export default function WhatsAppPage() {
     { enabled: !!selectedConv, refetchInterval: 3000 }
   );
 
+  const { data: systemPrompt } = trpc.whatsapp.getSystemPrompt.useQuery();
+  const [showPrompt, setShowPrompt] = useState(false);
+
   const updateConfig = trpc.whatsapp.updateConfig.useMutation({
     onSuccess: () => utils.whatsapp.getConfig.invalidate(),
   });
@@ -558,6 +561,33 @@ export default function WhatsAppPage() {
                     placeholder="Use {start} e {end} para horarios. Ex: Funcionamos das {start} as {end}"
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* System Prompt */}
+            <Card className="border-border/50 lg:col-span-2">
+              <CardContent className="p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold flex items-center gap-2">
+                    <Bot className="w-4 h-4 text-purple-400" /> Prompt do Sistema (Cerebro da IA)
+                  </h3>
+                  <button
+                    onClick={() => setShowPrompt(!showPrompt)}
+                    className="text-[11px] px-3 py-1.5 rounded-lg font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition-all"
+                  >
+                    {showPrompt ? "Ocultar" : "Visualizar Prompt"}
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Este e o prompt completo enviado a IA a cada conversa. Inclui cardapio, regras, estrategia de upsell e fluxo de atendimento. As variaveis entre chaves sao substituidas automaticamente pelas configuracoes acima.
+                </p>
+                {showPrompt && (
+                  <div className="mt-3 p-4 bg-secondary/50 border border-border/30 rounded-lg max-h-[500px] overflow-y-auto">
+                    <pre className="text-[11px] text-muted-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                      {systemPrompt ?? "Carregando..."}
+                    </pre>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
