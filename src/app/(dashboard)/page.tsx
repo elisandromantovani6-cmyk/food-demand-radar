@@ -7,6 +7,8 @@ import { DemandTimeline } from "@/components/widgets/demand-timeline";
 import { AlertsPanel } from "@/components/widgets/alerts-panel";
 import { DemandHeatmap } from "@/components/map/demand-heatmap";
 import { WeatherWidget } from "@/components/widgets/weather-widget";
+import { QuickActions } from "@/components/widgets/quick-actions";
+import { ActiveCampaigns } from "@/components/widgets/active-campaigns";
 import { useAuth } from "@/lib/auth";
 
 function getGreeting(): string {
@@ -63,6 +65,16 @@ export default function CommandCenterPage() {
         </div>
         <div className="col-span-12 lg:col-span-4">
           <AlertsPanel />
+        </div>
+      </div>
+
+      {/* Quick Actions + Active Campaigns */}
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 lg:col-span-5">
+          <QuickActions />
+        </div>
+        <div className="col-span-12 lg:col-span-7">
+          <ActiveCampaigns />
         </div>
       </div>
     </div>
