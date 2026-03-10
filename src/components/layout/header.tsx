@@ -1,9 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Bell, ChevronRight, Search } from "lucide-react";
+import { Bell, ChevronRight, Search, Sun, Moon } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useNotifications } from "@/components/notifications-panel";
+import { useTheme } from "@/components/theme-provider";
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Command Center",
@@ -15,13 +16,15 @@ const PAGE_TITLES: Record<string, string> = {
   "/campaigns": "Campanhas",
   "/expansion": "Radar de Expansão",
   "/analytics": "Analytics",
-  "/settings": "Configurações",
+  "/reports": "Relatorios",
+  "/settings": "Configuracoes",
 };
 
 export function Header() {
   const pathname = usePathname();
   const title = PAGE_TITLES[pathname] || "Food Demand Radar";
   const { toggle: toggleNotifications, unreadCount } = useNotifications();
+  const { theme, toggleTheme } = useTheme();
 
   const { data: weather } = trpc.data.weather.useQuery(undefined, {
     refetchInterval: 300000,
@@ -56,6 +59,19 @@ export function Header() {
             <span className="capitalize truncate max-w-[80px]">{weather.description}</span>
           </div>
         )}
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg hover:bg-accent transition-colors"
+          title={theme === "dark" ? "Modo claro" : "Modo escuro"}
+        >
+          {theme === "dark" ? (
+            <Sun className="w-4 h-4 text-muted-foreground" />
+          ) : (
+            <Moon className="w-4 h-4 text-muted-foreground" />
+          )}
+        </button>
 
         {/* Notifications */}
         <button

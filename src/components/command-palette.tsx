@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, Map, Target, TrendingUp, Flame,
   Megaphone, Navigation, BarChart3, Settings, UtensilsCrossed,
-  Search, ArrowRight, Keyboard,
+  Search, ArrowRight, Keyboard, FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,8 @@ const COMMANDS: CommandItem[] = [
   { id: "menu", label: "Cardápio", description: "Gerenciar itens e combos", icon: UtensilsCrossed, href: "/menu", category: "Navegação", keywords: ["cardapio", "menu", "pizza", "itens", "combos", "precos"] },
   { id: "campaigns", label: "Campanhas", description: "Campanhas de marketing", icon: Megaphone, href: "/campaigns", category: "Navegação", keywords: ["campanhas", "marketing", "promocao", "anuncios"] },
   { id: "expansion", label: "Expansão", description: "Radar de expansão", icon: Navigation, href: "/expansion", category: "Navegação", keywords: ["expansao", "abrir", "nova loja", "bairro"] },
-  { id: "analytics", label: "Analytics", description: "Métricas e relatórios", icon: BarChart3, href: "/analytics", category: "Navegação", keywords: ["analytics", "metricas", "relatorios", "dados"] },
+  { id: "analytics", label: "Analytics", description: "Métricas e relatórios", icon: BarChart3, href: "/analytics", category: "Navegação", keywords: ["analytics", "metricas", "dados"] },
+  { id: "reports", label: "Relatórios", description: "Relatórios de performance", icon: FileText, href: "/reports", category: "Navegação", keywords: ["relatorios", "reports", "semanal", "mensal", "exportar", "pdf"] },
   { id: "settings", label: "Configurações", description: "Preferências do sistema", icon: Settings, href: "/settings", category: "Navegação", keywords: ["configuracoes", "settings", "preferencias", "perfil"] },
 ];
 

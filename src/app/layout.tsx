@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TRPCProvider } from "@/lib/trpc-provider";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TRPCProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </TRPCProvider>
+        <ThemeProvider>
+          <TRPCProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </TRPCProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
