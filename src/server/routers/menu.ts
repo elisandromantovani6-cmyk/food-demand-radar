@@ -751,6 +751,11 @@ const menuItems: MenuItem[] = [
     popular: false,
     createdAt: new Date().toISOString(),
   },
+  // === BORDA RECHEADA ===
+  { id: "item-borda-catupiry", name: "Borda de Catupiry", description: "Borda recheada com Catupiry", category: "borda_recheada", price: 8.00, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-borda-requeijao", name: "Borda de Requeijão", description: "Borda recheada com requeijão", category: "borda_recheada", price: 8.00, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-borda-cream-cheese", name: "Borda de Cream Cheese", description: "Borda recheada com cream cheese", category: "borda_recheada", price: 8.00, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
+  { id: "item-borda-pasta-alho", name: "Borda de Pasta de Alho", description: "Borda recheada com pasta de alho", category: "borda_recheada", price: 8.00, cost: 0, active: true, popular: false, createdAt: new Date().toISOString() },
 ];
 
 const menuCombos: MenuCombo[] = [];
