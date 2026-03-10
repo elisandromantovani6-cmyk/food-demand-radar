@@ -1265,8 +1265,8 @@ export default function MenuPage() {
                                   )}
                                 </div>
 
-                                {/* Borda recheada info — puxa da aba borda_recheada */}
-                                {bordaItems.length > 0 && (
+                                {/* Borda recheada info — apenas pizzas salgadas */}
+                                {bordaItems.length > 0 && item.category === "pizzas" && (
                                   <div className="flex flex-wrap items-center gap-3">
                                     <p className="text-[10px] font-semibold text-amber-400/80 uppercase tracking-wider">Borda Recheada:</p>
                                     {bordaItems.map(b => (
