@@ -22,8 +22,6 @@ const CATEGORIES = [
   { id: "sobremesas", label: "Sobremesas" },
   { id: "molhos", label: "Molhos" },
   { id: "borda_recheada", label: "Borda Recheada" },
-  { id: "entradas", label: "Entradas" },
-  { id: "extras", label: "Extras" },
 ];
 
 export default function MenuPage() {
@@ -145,6 +143,10 @@ export default function MenuPage() {
     filter ? { category: filter } : {},
     { refetchInterval: false }
   );
+  const { data: bordaData } = trpc.menu.getItems.useQuery(
+    { category: "borda_recheada" },
+    { refetchInterval: false }
+  );
   const { data: combos } = trpc.menu.getCombos.useQuery(undefined, { refetchInterval: false });
   const { data: suggestions } = trpc.menu.suggestCombos.useQuery(undefined, { refetchInterval: false });
   const { data: pizzaConfig } = trpc.menu.getPizzaConfig.useQuery(undefined, { refetchInterval: false });
@@ -187,6 +189,7 @@ export default function MenuPage() {
   });
 
   const items = data?.items ?? [];
+  const bordaItems = (bordaData?.items ?? []).filter(i => i.active);
   const stats = data?.stats;
 
   const handleAddItem = () => {
@@ -616,16 +619,18 @@ export default function MenuPage() {
                   ))}
                 </div>
 
-                <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-                  <p className="text-[11px] text-amber-400 font-medium mb-1">Borda Recheada (adicional)</p>
-                  <div className="flex flex-wrap gap-3">
-                    {pizzaConfig.stuffedCrust.map(sc => (
-                      <span key={sc.id} className="text-[11px] text-muted-foreground">
-                        {sc.label}: <span className="font-semibold text-foreground">+R$ {sc.price.toFixed(2)}</span>
-                      </span>
-                    ))}
+                {bordaItems.length > 0 && (
+                  <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg">
+                    <p className="text-[11px] text-amber-400 font-medium mb-1">Borda Recheada (adicional)</p>
+                    <div className="flex flex-wrap gap-3">
+                      {bordaItems.map(b => (
+                        <span key={b.id} className="text-[11px] text-muted-foreground">
+                          {b.name.replace("Borda de ", "")}: <span className="font-semibold text-foreground">+R$ {b.price.toFixed(2)}</span>
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -1260,15 +1265,17 @@ export default function MenuPage() {
                                   )}
                                 </div>
 
-                                {/* Borda recheada info */}
-                                <div className="flex flex-wrap items-center gap-3">
-                                  <p className="text-[10px] font-semibold text-amber-400/80 uppercase tracking-wider">Borda Recheada:</p>
-                                  {pizzaConfig.stuffedCrust.map(sc => (
-                                    <span key={sc.id} className="text-[11px] text-muted-foreground">
-                                      {sc.label} <span className="font-semibold text-amber-400">+R$ {sc.price.toFixed(2)}</span>
-                                    </span>
-                                  ))}
-                                </div>
+                                {/* Borda recheada info — puxa da aba borda_recheada */}
+                                {bordaItems.length > 0 && (
+                                  <div className="flex flex-wrap items-center gap-3">
+                                    <p className="text-[10px] font-semibold text-amber-400/80 uppercase tracking-wider">Borda Recheada:</p>
+                                    {bordaItems.map(b => (
+                                      <span key={b.id} className="text-[11px] text-muted-foreground">
+                                        {b.name.replace("Borda de ", "")} <span className="font-semibold text-amber-400">+R$ {b.price.toFixed(2)}</span>
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             </td>
                           </tr>
