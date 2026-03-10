@@ -1135,7 +1135,7 @@ export default function MenuPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf,.txt,.csv,.tsv"
+                accept=".pdf,.txt,.csv,.tsv,.jpg,.jpeg,.png,.webp,image/*"
                 className="hidden"
                 onChange={e => {
                   const file = e.target.files?.[0];
@@ -1169,9 +1169,12 @@ export default function MenuPage() {
                     </div>
                     <p className="text-sm font-medium mb-1">Arraste seu arquivo de cardápio aqui</p>
                     <p className="text-xs text-muted-foreground mb-4">ou clique para selecionar</p>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap justify-center">
                       <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/50 text-[11px] text-muted-foreground">
                         <FileText className="w-3 h-3" /> PDF
+                      </span>
+                      <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/50 text-[11px] text-muted-foreground">
+                        <ImagePlus className="w-3 h-3" /> Foto
                       </span>
                       <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/50 text-[11px] text-muted-foreground">
                         <FileText className="w-3 h-3" /> TXT
@@ -1180,6 +1183,9 @@ export default function MenuPage() {
                         <FileText className="w-3 h-3" /> CSV
                       </span>
                     </div>
+                    <p className="text-[10px] text-muted-foreground/60 mt-3">
+                      IA analisa PDFs, fotos e scans automaticamente
+                    </p>
                   </>
                 )}
               </div>

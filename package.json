@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@base-ui/react": "^1.2.0",
     "@deck.gl/core": "^9.2.11",
     "@deck.gl/geo-layers": "^9.2.11",
@@ -22,6 +23,7 @@
     "@trpc/react-query": "^11.0.0",
     "@trpc/server": "^11.0.0",
     "@types/leaflet": "^1.9.21",
+    "canvas": "^3.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -34,6 +36,7 @@
     "next": "16.1.6",
     "node-cron": "^4.2.1",
     "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^5.5.207",
     "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
