@@ -9,7 +9,7 @@ import {
   UtensilsCrossed, Plus, X, Star, Sparkles, Package,
   Percent, Trash2, Check, DollarSign, TrendingUp,
   Upload, FileText, AlertCircle, Loader2, ChevronDown, ChevronUp, Eye,
-  Pizza, Ruler,
+  Pizza, Ruler, ImagePlus, Camera,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
@@ -43,6 +43,11 @@ export default function MenuPage() {
   const [editSizePricesForm, setEditSizePricesForm] = useState<Record<string, { price: string; cost: string }>>({});
   const [editCrustsForm, setEditCrustsForm] = useState<Set<string>>(new Set());
 
+  // Image upload states
+  const [itemImage, setItemImage] = useState<string>("");
+  const [editItemImage, setEditItemImage] = useState<string>("");
+  const [imageUploading, setImageUploading] = useState(false);
+
   // Upload states
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "parsed" | "error">("idle");
@@ -53,6 +58,24 @@ export default function MenuPage() {
   const [uploadFileName, setUploadFileName] = useState("");
   const [importingCount, setImportingCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = useCallback(async (file: File, target: "add" | "edit") => {
+    setImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        if (target === "add") setItemImage(data.url);
+        else setEditItemImage(data.url);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setImageUploading(false);
+    }
+  }, []);
 
   const handleFileUpload = useCallback(async (file: File) => {
     setUploadStatus("uploading");
@@ -176,7 +199,9 @@ export default function MenuPage() {
       cost: parseFloat(itemForm.cost) || 0,
       ...(sizePrices && sizePrices.length > 0 ? { sizePrices } : {}),
       ...(crusts ? { crusts } : {}),
+      ...(itemImage ? { image: itemImage } : {}),
     });
+    setItemImage("");
   };
 
   const handleCreateCombo = () => {
@@ -189,7 +214,7 @@ export default function MenuPage() {
     });
   };
 
-  const startEditing = (item: { id: string; name: string; description: string; category: string; price: number; cost: number; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
+  const startEditing = (item: { id: string; name: string; description: string; category: string; price: number; cost: number; image?: string; sizePrices?: Array<{ sizeId: string; price: number; cost: number }>; crusts?: string[] }) => {
     setEditingId(item.id);
     setEditForm({
       name: item.name,
@@ -198,6 +223,7 @@ export default function MenuPage() {
       price: item.price.toFixed(2),
       cost: item.cost.toFixed(2),
     });
+    setEditItemImage(item.image ?? "");
     // Carregar dados de pizza no form de edição
     if (item.sizePrices) {
       const sp: Record<string, { price: string; cost: string }> = {};
@@ -229,7 +255,9 @@ export default function MenuPage() {
       active: currentActive,
       ...(sizePrices && sizePrices.length > 0 ? { sizePrices } : {}),
       ...(crusts ? { crusts } : {}),
+      ...(editItemImage !== undefined ? { image: editItemImage } : {}),
     });
+    setEditItemImage("");
   };
 
   const cancelEdit = () => {
@@ -403,6 +431,49 @@ export default function MenuPage() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Foto do item */}
+            <div className="mt-4 pt-4 border-t border-border/30">
+              <Label className="text-xs flex items-center gap-1.5 mb-2">
+                <Camera className="w-3.5 h-3.5" /> Foto do Produto
+              </Label>
+              <div className="flex items-center gap-3">
+                {itemImage ? (
+                  <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border/50">
+                    <img src={itemImage} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => setItemImage("")}
+                      className="absolute top-0.5 right-0.5 p-0.5 rounded-full bg-black/60 text-white hover:bg-black/80"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-20 h-20 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 cursor-pointer transition-colors bg-secondary/30">
+                    {imageUploading ? (
+                      <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+                    ) : (
+                      <>
+                        <ImagePlus className="w-5 h-5 text-muted-foreground mb-1" />
+                        <span className="text-[9px] text-muted-foreground">Upload</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      className="hidden"
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file, "add");
+                      }}
+                    />
+                  </label>
+                )}
+                <p className="text-[10px] text-muted-foreground">
+                  JPG, PNG ou WebP. Max 5MB.
+                </p>
               </div>
             </div>
 
@@ -715,22 +786,55 @@ export default function MenuPage() {
                           </td>
                           <td className="py-2.5">
                             {isEditing ? (
-                              <div className="space-y-1">
-                                <input
-                                  value={editForm.name}
-                                  onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-                                  className="w-full bg-secondary border border-border rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
-                                  autoFocus
-                                />
-                                <input
-                                  value={editForm.description}
-                                  onChange={e => setEditForm({ ...editForm, description: e.target.value })}
-                                  placeholder="Descrição"
-                                  className="w-full bg-secondary border border-border rounded-md px-2 py-1 text-[11px] text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                                />
+                              <div className="flex items-start gap-2.5">
+                                {/* Thumbnail upload no edit */}
+                                <label className="shrink-0 cursor-pointer">
+                                  {editItemImage ? (
+                                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border/50">
+                                      <img src={editItemImage} alt="Foto" className="w-full h-full object-cover" />
+                                      <button
+                                        type="button"
+                                        onClick={(e) => { e.preventDefault(); setEditItemImage(""); }}
+                                        className="absolute top-0 right-0 p-0.5 rounded-full bg-black/60 text-white"
+                                      >
+                                        <X className="w-2.5 h-2.5" />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-lg border border-dashed border-border/50 hover:border-primary/50 flex items-center justify-center bg-secondary/30 transition-colors">
+                                      {imageUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" /> : <Camera className="w-3.5 h-3.5 text-muted-foreground" />}
+                                    </div>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp,image/avif"
+                                    className="hidden"
+                                    onChange={e => {
+                                      const file = e.target.files?.[0];
+                                      if (file) handleImageUpload(file, "edit");
+                                    }}
+                                  />
+                                </label>
+                                <div className="flex-1 space-y-1">
+                                  <input
+                                    value={editForm.name}
+                                    onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                    className="w-full bg-secondary border border-border rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+                                    autoFocus
+                                  />
+                                  <input
+                                    value={editForm.description}
+                                    onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                                    placeholder="Descrição"
+                                    className="w-full bg-secondary border border-border rounded-md px-2 py-1 text-[11px] text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                  />
+                                </div>
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 cursor-pointer" onClick={() => startEditing(item)}>
+                              <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => startEditing(item)}>
+                                {item.image && (
+                                  <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover border border-border/30 shrink-0" />
+                                )}
                                 <div>
                                   <p className="font-medium flex items-center gap-1.5">
                                     {item.name}

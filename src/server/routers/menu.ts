@@ -234,6 +234,7 @@ export const menuRouter = router({
         cost: z.number().min(0),
       })).optional(),
       crusts: z.array(z.string()).optional(),
+      image: z.string().optional(),
     }))
     .mutation(({ input }) => {
       const item: MenuItem = {
@@ -263,6 +264,7 @@ export const menuRouter = router({
         cost: z.number().min(0),
       })).optional(),
       crusts: z.array(z.string()).optional(),
+      image: z.string().optional(),
     }))
     .mutation(({ input }) => {
       const idx = menuItems.findIndex(i => i.id === input.id);
