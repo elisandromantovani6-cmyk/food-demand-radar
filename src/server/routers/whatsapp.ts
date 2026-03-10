@@ -241,7 +241,7 @@ const config: WhatsAppConfig = {
   businessName: "Pizzaria",
   greetingMessage: "Ola! Bem-vindo a nossa pizzaria! Como posso ajudar voce hoje?",
   offlineMessage: "No momento estamos fechados. Nosso horario de funcionamento e das {start} as {end}. Aguardamos voce!",
-  operatingHours: { start: "18:00", end: "23:00" },
+  operatingHours: { start: "18:00", end: "22:50" },
   autoReply: true,
   tone: "amigavel",
   maxWaitMinutes: 3,
