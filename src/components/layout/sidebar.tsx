@@ -22,6 +22,7 @@ import {
   LogOut,
   UtensilsCrossed,
   MessageSquare,
+  BookOpen,
 } from "lucide-react";
 
 const navGroups = [
@@ -52,6 +53,7 @@ const navGroups = [
   {
     label: "Insights",
     items: [
+      { href: "/strategy", label: "Estrategia", icon: BookOpen },
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/reports", label: "Relatorios", icon: FileText },
     ],
