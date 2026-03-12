@@ -1,4 +1,5 @@
 import { demandEngine } from "./demand-engine";
+import { scoringEngine } from "./scoring-engine";
 import { collectCurrentWeather, getMockWeather, type WeatherData } from "../collectors/weather-collector";
 
 export interface Alert {
@@ -60,8 +61,8 @@ export class AlertEngine {
     return alerts;
   }
 
-  checkSurgeAlerts(city: string = "Tangara da Serra"): Alert[] {
-    const hotSpots = demandEngine.getHotNeighborhoods(city, 3);
+  async checkSurgeAlerts(city: string = "Tangara da Serra"): Promise<Alert[]> {
+    const hotSpots = await demandEngine.getHotNeighborhoods(city, 3);
     const alerts: Alert[] = [];
 
     for (const spot of hotSpots) {
@@ -114,12 +115,40 @@ export class AlertEngine {
     return alerts;
   }
 
+  async checkUnderservedAlerts(city: string = "Tangara da Serra"): Promise<Alert[]> {
+    const ranking = await scoringEngine.getExpansionRanking(city);
+    const alerts: Alert[] = [];
+
+    // Bairros com alta demanda + baixa concorrência = subatendidos
+    for (const spot of ranking.slice(0, 10)) {
+      if (spot.demandScore > 60 && spot.competitionScore < 30) {
+        alerts.push({
+          id: `underserved-${spot.neighborhoodId}`,
+          type: "underserved",
+          severity: spot.demandScore > 75 ? "high" : "medium",
+          title: `${spot.name} está subatendido`,
+          description: `Alta demanda (${spot.demandScore}/100) com baixa concorrência (${spot.competitionScore}/100). Oportunidade de expansão com receita estimada de R$${spot.estimatedMonthlyRevenue.toLocaleString()}/mês.`,
+          data: {
+            neighborhoodId: spot.neighborhoodId,
+            demandScore: spot.demandScore,
+            competitionScore: spot.competitionScore,
+            estimatedRevenue: spot.estimatedMonthlyRevenue,
+          },
+          createdAt: new Date(),
+        });
+      }
+    }
+
+    return alerts;
+  }
+
   async runAlertCheck(city: string = "Tangara da Serra"): Promise<Alert[]> {
     const weatherAlerts = await this.checkWeatherAlerts();
     return [
       ...weatherAlerts,
-      ...this.checkSurgeAlerts(city),
+      ...(await this.checkSurgeAlerts(city)),
       ...this.checkEventAlerts(),
+      ...(await this.checkUnderservedAlerts(city)),
     ].sort((a, b) => {
       const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return severityOrder[a.severity] - severityOrder[b.severity];

@@ -1,65 +1,98 @@
 import { demandEngine } from "./demand-engine";
+import { supabaseAdmin } from "@/lib/supabase/server";
+import { dataCache } from "../data/cache";
 
-const NEIGHBORHOOD_DATA: Record<string, { population: number; income: number; competition: number }> = {
-  n1: { population: 85, income: 60, competition: 70 },   // Centro
-  n2: { population: 55, income: 72, competition: 35 },   // Jd Europa
-  n3: { population: 48, income: 55, competition: 25 },   // Parque da Serra
-  n4: { population: 38, income: 65, competition: 20 },   // Jd Shangri-la
-  n5: { population: 62, income: 50, competition: 40 },   // Progresso
-  n6: { population: 42, income: 45, competition: 18 },   // Jd Goias
-  n7: { population: 35, income: 68, competition: 30 },   // Parque Universitario
-  n8: { population: 40, income: 52, competition: 22 },   // Jd Cidade Alta
-  n9: { population: 32, income: 48, competition: 15 },   // Jd Monte Libano
-  n10: { population: 50, income: 58, competition: 28 },  // Jd Sao Paulo
-  n11: { population: 45, income: 50, competition: 20 },  // Parque Tangara
-  n12: { population: 30, income: 55, competition: 12 },  // Jd Buritis
-  n13: { population: 38, income: 52, competition: 25 },  // Triangulo
-  n14: { population: 28, income: 45, competition: 10 },  // Jd Nazare
-  n15: { population: 35, income: 48, competition: 16 },  // Parque Leblon
-  n16: { population: 25, income: 42, competition: 8 },   // Jd Dona Julia
-  n17: { population: 40, income: 50, competition: 22 },  // Sao Jorge
-  n18: { population: 22, income: 60, competition: 5 },   // Jd Alto da Boa Vista
-  n19: { population: 28, income: 46, competition: 10 },  // Jd Morada do Sol
-  n20: { population: 32, income: 52, competition: 14 },  // Jd dos Ipes
-};
+interface NeighborhoodData {
+  id: string;
+  name: string;
+  population: number;
+  avg_income: number;
+  lat: number;
+  lng: number;
+}
+
+const SCORING_CACHE_KEY = "scoring_neighborhoods";
+const SCORING_CACHE_TTL = 5 * 60 * 1000; // 5 min
+
+async function getNeighborhoodData(): Promise<NeighborhoodData[]> {
+  const cached = dataCache.get<NeighborhoodData[]>(SCORING_CACHE_KEY);
+  if (cached) return cached.data;
+
+  const { data, error } = await supabaseAdmin
+    .from("neighborhoods")
+    .select("id, name, population, avg_income, lat, lng");
+
+  if (error || !data || data.length === 0) {
+    return [];
+  }
+
+  const neighborhoods = data as NeighborhoodData[];
+  dataCache.set(SCORING_CACHE_KEY, neighborhoods, SCORING_CACHE_TTL);
+  return neighborhoods;
+}
+
+// Estima concorrência baseado em população e renda (sem dados reais de concorrentes)
+function estimateCompetition(pop: number, income: number): number {
+  // Bairros maiores e mais ricos tendem a ter mais concorrência
+  const popFactor = Math.min(pop / 8000, 1) * 50;
+  const incomeFactor = Math.min(income / 5000, 1) * 30;
+  return Math.round(popFactor + incomeFactor);
+}
 
 export class ScoringEngine {
-  pizzaOpportunityScore(neighborhoodId: string, foodCategory: string = "pizza"): number {
-    const demand = demandEngine.calculateDemandScore(neighborhoodId, foodCategory);
-    const data = NEIGHBORHOOD_DATA[neighborhoodId];
-    if (!data) return 50;
+  async pizzaOpportunityScore(neighborhoodId: string, foodCategory: string = "pizza"): Promise<number> {
+    const demand = await demandEngine.calculateDemandScore(neighborhoodId, foodCategory);
+    const neighborhoods = await getNeighborhoodData();
+    const n = neighborhoods.find(n => n.id === neighborhoodId);
+    if (!n) return 50;
+
+    const popScore = Math.min((n.population ?? 3000) / 8000, 1) * 100;
+    const incomeScore = Math.min((n.avg_income ?? 2500) / 5000, 1) * 100;
+    const competition = estimateCompetition(n.population ?? 3000, n.avg_income ?? 2500);
 
     const score =
       demand * 0.35 +
-      data.population * 0.25 +
-      data.income * 0.15 -
-      data.competition * 0.25;
+      popScore * 0.25 +
+      incomeScore * 0.15 -
+      competition * 0.25;
 
     return Math.max(0, Math.min(100, Math.round(score)));
   }
 
-  getCompetitionDensity(neighborhoodId: string): number {
-    return NEIGHBORHOOD_DATA[neighborhoodId]?.competition ?? 50;
+  async getCompetitionDensity(neighborhoodId: string): Promise<number> {
+    const neighborhoods = await getNeighborhoodData();
+    const n = neighborhoods.find(n => n.id === neighborhoodId);
+    if (!n) return 50;
+    return estimateCompetition(n.population ?? 3000, n.avg_income ?? 2500);
   }
 
-  getExpansionRanking(city: string = "Sao Paulo") {
-    return Object.entries(NEIGHBORHOOD_DATA).map(([id, data]) => {
-      const pos = this.pizzaOpportunityScore(id);
-      const demand = demandEngine.calculateDemandScore(id);
-      const growth = Math.round(Math.random() * 30 + 5);
-      const estimatedRevenue = Math.round(15000 + pos * 350 + Math.random() * 5000);
+  async getExpansionRanking(city: string = "Tangara da Serra") {
+    const neighborhoods = await getNeighborhoodData();
+    const heatmap = await demandEngine.getHeatmapData(city);
 
-      return {
-        neighborhoodId: id,
-        name: demandEngine.getHeatmapData().find(n => n.neighborhoodId === id)?.name ?? id,
-        posScore: pos,
-        demandScore: demand,
-        competitionScore: data.competition,
-        growthTrend: growth,
-        estimatedMonthlyRevenue: estimatedRevenue,
-        riskLevel: data.competition > 60 ? "alto" : data.competition > 40 ? "medio" : "baixo",
-      };
-    }).sort((a, b) => b.posScore - a.posScore);
+    const rankings = await Promise.all(
+      neighborhoods.map(async (n) => {
+        const pos = await this.pizzaOpportunityScore(n.id);
+        const heatData = heatmap.find(h => h.neighborhoodId === n.id);
+        const demand = heatData?.demandScore ?? 50;
+        const competition = estimateCompetition(n.population ?? 3000, n.avg_income ?? 2500);
+        const growth = Math.round(Math.random() * 30 + 5);
+        const estimatedRevenue = Math.round(15000 + pos * 350 + Math.random() * 5000);
+
+        return {
+          neighborhoodId: n.id,
+          name: n.name,
+          posScore: pos,
+          demandScore: demand,
+          competitionScore: competition,
+          growthTrend: growth,
+          estimatedMonthlyRevenue: estimatedRevenue,
+          riskLevel: competition > 60 ? "alto" : competition > 40 ? "medio" : "baixo",
+        };
+      })
+    );
+
+    return rankings.sort((a, b) => b.posScore - a.posScore);
   }
 }
 

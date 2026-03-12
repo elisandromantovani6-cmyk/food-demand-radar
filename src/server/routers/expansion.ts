@@ -8,7 +8,7 @@ export const expansionRouter = router({
       city: z.string().default("Tangara da Serra"),
       foodCategory: z.string().default("pizza"),
     }))
-    .query(() => {
+    .query(async () => {
       return scoringEngine.getExpansionRanking();
     }),
 
@@ -17,11 +17,11 @@ export const expansionRouter = router({
       neighborhoodId: z.string(),
       foodCategory: z.string().default("pizza"),
     }))
-    .query(({ input }) => {
+    .query(async ({ input }) => {
       return {
         neighborhoodId: input.neighborhoodId,
-        posScore: scoringEngine.pizzaOpportunityScore(input.neighborhoodId, input.foodCategory),
-        competitionDensity: scoringEngine.getCompetitionDensity(input.neighborhoodId),
+        posScore: await scoringEngine.pizzaOpportunityScore(input.neighborhoodId, input.foodCategory),
+        competitionDensity: await scoringEngine.getCompetitionDensity(input.neighborhoodId),
       };
     }),
 });

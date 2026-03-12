@@ -2,7 +2,7 @@ import { router, publicProcedure } from "../trpc";
 import { demandEngine } from "../engines/demand-engine";
 
 export const kpisRouter = router({
-  getToday: publicProcedure.query(() => {
+  getToday: publicProcedure.query(async () => {
     const now = new Date();
     const hour = now.getHours();
     const dayOfWeek = now.getDay();
@@ -29,8 +29,8 @@ export const kpisRouter = router({
     const variation = (Math.abs(hash) % 30) - 10; // -10 a +20
 
     // Hunger score da cidade
-    const hungerScore = demandEngine.getCityHungerScore();
-    const peak = demandEngine.getPeakForecast();
+    const hungerScore = await demandEngine.getCityHungerScore();
+    const peak = await demandEngine.getPeakForecast();
 
     return {
       ordersToday,

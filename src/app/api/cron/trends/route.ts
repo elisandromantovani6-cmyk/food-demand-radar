@@ -10,6 +10,9 @@ const PIZZA_FLAVORS = [
   "pizza portuguesa",
   "pizza cheddar bacon",
   "pizza carne seca",
+  "pizza perto de mim",
+  "promoção pizza",
+  "pizza delivery tangará",
 ];
 
 export async function GET(req: NextRequest) {

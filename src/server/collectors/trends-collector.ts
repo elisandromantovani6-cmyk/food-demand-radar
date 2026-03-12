@@ -51,6 +51,9 @@ const DELIVERY_TERMS = [
   "pedir pizza",
   "pizzaria delivery",
   "ifood pizza",
+  "pizza perto de mim",
+  "promoção pizza",
+  "pizza delivery tangará",
 ];
 
 export async function collectTrendsBatch(): Promise<TrendsBatchResult | null> {
